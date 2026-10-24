@@ -1,7 +1,6 @@
 ---
 name: fechar-decisoes
-description: Fecha as decisoes em aberto de um plano, especificacao, lista de tarefas, issue ou trecho da conversa do projeto atual antes de implementar. Levanta cada ponto com fonte, opcoes e consequencia de nao decidir, recomenda so com evidencia conferida, conversa ponto a ponto, grava escolhas e historico num estado local por projeto e propoe o diff para o plano. Use somente quando o usuario invocar.
-disable-model-invocation: true
+description: Fecha as decisoes em aberto de um plano, especificacao, lista de tarefas, issue ou trecho da conversa do projeto atual antes de implementar. Levanta cada ponto com fonte, opcoes e consequencia de nao decidir, recomenda so com evidencia conferida, conversa ponto a ponto, grava escolhas e historico num estado local por projeto e propoe o diff para o plano. Use quando o usuario invocar e tambem por conta propria sempre que, antes de implementar, houver decisoes em aberto que mudam o que sera construido: plano, spec ou lista de tarefas com perguntas, "pendente", "a definir", TBD ou opcoes nao escolhidas; issue com requisitos ambiguos; conversa que acumulou varias escolhas sem resposta; ou pedido como "vamos fechar as pendencias", "o que falta decidir?", "decide comigo antes de codar". Nao use para uma unica pergunta simples que se resolve numa linha, nem quando o usuario ja decidiu tudo e so pediu para implementar.
 argument-hint: "[fonte: caminho, issue ou 'conversa'] [id=slug] [modo=rapido|conversa|painel] [aplicar] [escopo]"
 ---
 
