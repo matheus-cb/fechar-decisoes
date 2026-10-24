@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<title>Decisões em aberto</title>
+<style>
+:root{
+  --bg:#F4F6F8; --surface:#FFFFFF; --surface-2:#EAEEF2; --fg:#17212B; --muted:#55626F; --line:#D5DCE3;
+  --accent:#0B6E6E; --accent-soft:#D7EEEC; --accent-fg:#FFFFFF;
+  --dec:#9A5B00; --dec-bg:#FCEFD9; --val:#1F5FA8; --val-bg:#DDE9F8; --ext:#6B3FA0; --ext-bg:#ECE2F7;
+  --ok:#1E7A3C; --ok-bg:#DCF1E3; --bad:#B3261E; --bad-bg:#FBE1DE;
+  --f-body:"Segoe UI",system-ui,-apple-system,sans-serif; --f-mono:Consolas,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#10161C; --surface:#18212A; --surface-2:#212C37; --fg:#E6ECF1; --muted:#9AA8B5; --line:#2E3B48;
+  --accent:#4FC2BE; --accent-soft:#163B3C; --accent-fg:#0B1A1A;
+  --dec:#F2B45A; --dec-bg:#3A2A12; --val:#82B4F0; --val-bg:#172A42; --ext:#C3A1EE; --ext-bg:#2C1E40;
+  --ok:#6BD08C; --ok-bg:#15301F; --bad:#F2867E; --bad-bg:#3D1A18; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2{margin:0;line-height:1.2}
+h1{font-size:clamp(22px,4vw,30px)}
+h2{font-size:21px}
+p{margin:0}
+.top{display:flex;flex-direction:column;gap:8px;border-bottom:2px solid var(--fg);padding-bottom:14px}
+.meta{font-size:14px;color:var(--muted)}
+.prog{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.prog span{display:block;height:100%;background:var(--accent);width:0}
+.grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+.trail{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;max-height:85vh;overflow:auto}
+.cam{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:8px}
+.it{all:unset;cursor:pointer;display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:6px 8px;border-radius:6px}
+.it:hover{background:var(--surface-2)}
+.it:focus-visible{outline:2px solid var(--accent)}
+.it[aria-current="true"]{background:var(--accent-soft)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:5px;border:2px solid var(--muted)}
+.dot.ok{background:var(--ok);border-color:var(--ok)}
+.dot.fix{background:var(--accent);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-family:var(--f-mono);font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px}
+.p-decisao{background:var(--dec-bg);color:var(--dec)} .p-validar{background:var(--val-bg);color:var(--val)} .p-externo{background:var(--ext-bg);color:var(--ext)}
+.p-t1{background:var(--bad-bg);color:var(--bad)} .p-t2{background:var(--ok-bg);color:var(--ok)} .p-apr{background:var(--accent-soft);color:var(--accent)}
+.q{font-size:19px;font-weight:700}
+.ops{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.op{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:4px;font-size:14.5px;background:var(--bg)}
+.op:hover{border-color:var(--accent)}
+.op:focus-visible{outline:2px solid var(--accent)}
+.op[aria-pressed="true"]{border:2px solid var(--accent);background:var(--accent-soft)}
+.op .n{font-weight:700}
+.op .f{color:var(--ok)} .op .c{color:var(--bad)}
+.op .tag{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+details{border:1px dashed var(--accent);border-radius:8px;padding:8px 12px}
+summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.box{background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:14.5px}
+.src{font-family:var(--f-mono);font-size:12px;color:var(--muted);word-break:break-all}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:4px}
+textarea{font:inherit;font-size:14.5px;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--fg);min-height:56px;resize:vertical}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:14.5px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.btn.pri{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.aviso{font-size:13.5px;color:var(--ok);min-height:1.2em}
+.decidido{border-left:4px solid var(--ok);background:var(--ok-bg);padding:8px 12px;border-radius:0 8px 8px 0;font-size:14.5px}
+.res{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;color:var(--muted)}
+pre{font-family:var(--f-mono);font-size:12px;background:var(--surface-2);padding:10px;border-radius:8px;overflow-x:auto;white-space:pre-wrap;margin:0}
+.erro{background:var(--bad-bg);color:var(--bad);padding:14px;border-radius:8px}
+@media (max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}.trail{position:static;max-height:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1 id="titulo">Decisões em aberto</h1>
+    <p class="meta" id="meta">Carregando os pontos…</p>
+    <div class="prog" aria-hidden="true"><span id="barra"></span></div>
+  </div>
+  <div id="erro" class="erro" hidden></div>
+  <div class="grid" id="grid" hidden>
+    <nav class="trail" id="trilha" aria-label="Pontos por camada"></nav>
+    <main class="card" id="painel"></main>
+  </div>
+  <section class="res" id="resumo" hidden>
+    <h2>Resumo das escolhas</h2>
+    <p class="meta">Este painel não grava nada no projeto. As marcações ficam só neste navegador. Para registrar, copie o resumo e cole na sessão.</p>
+    <div class="tbl"><table><thead><tr><th>Ponto</th><th>Escolha</th><th>Situação</th></tr></thead><tbody id="tabres"></tbody></table></div>
+    <div class="btns"><button class="btn pri" type="button" id="copiar">Copiar resumo</button><button class="btn" type="button" id="limpar">Limpar marcações</button></div>
+    <div class="aviso" id="aviso2" role="status"></div>
+    <pre id="txtres" hidden></pre>
+  </section>
+</div>
+<script type="application/json" id="dados">__DADOS_JSON__</script>
+<script>
+(function () {
+  var D = null, chave = '', est = { atual: null, escolhas: {}, textos: {}, notas: {} }, confirmarLimpar = false;
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function guardar() { try { localStorage.setItem(chave, JSON.stringify(est)); } catch (e) {} }
+  function carregar() { try { var s = JSON.parse(localStorage.getItem(chave) || 'null'); if (s && s.escolhas) est = s; } catch (e) {} }
+  function pontos() { return D.pontos || []; }
+  function ponto(id) { return pontos().filter(function (p) { return p.id === id; })[0] || pontos()[0]; }
+  function registro(p) { return p.registro && p.registro.status ? p.registro : null; }
+  function marcado(p) { return est.escolhas[p.id] != null || !!(est.textos[p.id] || '').trim(); }
+  function decidido(p) { return marcado(p) || !!registro(p); }
+  function nomeOp(p, k) { return p.opcoes[k] ? (k + 1) + '. ' + p.opcoes[k].nome : ''; }
+  function nomeEscolha(p) {
+    if (est.escolhas[p.id] != null) return nomeOp(p, est.escolhas[p.id]);
+    if ((est.textos[p.id] || '').trim()) return est.textos[p.id].trim();
+    var r = registro(p); if (r) return r.escolha != null ? nomeOp(p, r.escolha) : (r.texto || r.status);
+    return 'pendente';
+  }
+  function relRec(p) {
+    if (!marcado(p) && registro(p)) return 'já registrado: ' + registro(p).status;
+    if (!p.rec) return marcado(p) ? 'sem recomendação' : '';
+    if (est.escolhas[p.id] == null) return marcado(p) ? 'diferente da recomendada' : '';
+    return est.escolhas[p.id] === p.rec.opcao ? 'recomendada' : 'diferente da recomendada';
+  }
+  function fontes(lst) { return (lst || []).map(function (f) { return '<div class="src">' + esc(f.ref) + (f.trecho ? ' · "' + esc(f.trecho) + '"' : '') + '</div>'; }).join(''); }
+
+  function trilha() {
+    var h = '', cams = (D.camadas && D.camadas.length) ? D.camadas : [{ id: undefined, nome: 'Pontos' }];
+    cams.forEach(function (c) {
+      var its = pontos().filter(function (p) { return D.camadas && D.camadas.length ? p.camada === c.id : true; });
+      if (!its.length) return;
+      h += '<div class="cam">' + esc(c.nome) + '</div>';
+      its.forEach(function (p) {
+        var cls = marcado(p) ? 'dot ok' : (registro(p) ? 'dot fix' : 'dot');
+        h += '<button class="it" type="button" data-id="' + esc(p.id) + '" aria-current="' + (p.id === est.atual) + '"><span class="' + cls + '"></span><span>' + esc(p.id) + ' · ' + esc(p.titulo) + '</span></button>';
+      });
+    });
+    $('trilha').innerHTML = h;
+  }
+
+  function painel() {
+    var p = ponto(est.atual), r = registro(p);
+    var h = '<div class="pills"><span class="pill p-' + esc(p.situacao) + '">' + esc(p.situacao) + '</span><span class="pill p-t' + esc(p.tipo) + '">tipo ' + esc(p.tipo) + (p.tipo === 1 ? ' · difícil de desfazer' : ' · reversível') + '</span>' + (p.aprovador ? '<span class="pill p-apr">aprovador: ' + esc(p.aprovador.quem) + '</span>' : '') + '</div>';
+    h += '<h2>' + esc(p.id) + ' · ' + esc(p.titulo) + '</h2><p class="q">' + esc(p.pergunta) + '</p>';
+    if (r) h += '<div class="decidido">Registrado na sessão: <b>' + esc(r.escolha != null ? nomeOp(p, r.escolha) : (r.texto || '')) + '</b> · ' + esc(r.status) + (r.quem ? ' · ' + esc(r.quem) : '') + (r.data ? ' · ' + esc(r.data) : '') + '</div>';
+    h += '<div class="box">' + esc(p.contexto) + fontes(p.fontes) + '</div>';
+    h += '<div class="ops">' + p.opcoes.map(function (o, k) {
+      return '<button class="op" type="button" data-op="' + k + '" aria-pressed="' + (est.escolhas[p.id] === k) + '"><span class="n">' + esc(nomeOp(p, k)) + '</span><span class="f">+ ' + esc(o.favor) + '</span><span class="c">− ' + esc(o.contra) + '</span>' + (o.origem === 'proposta' ? '<span class="tag">opção proposta, sem base na fonte</span>' : '') + '</button>';
+    }).join('') + '</div>';
+    if (p.rec) {
+      var rt = '<p><b>' + esc(nomeOp(p, p.rec.opcao)) + '</b>: ' + esc(p.rec.porque) + '</p>' + fontes(p.rec.fontes);
+      h += p.tipo === 1 ? '<details id="rec"><summary>Ver recomendação</summary>' + rt + '</details>' : '<div class="box" id="rec"><b>Recomendação</b> ' + rt + '</div>';
+    } else {
+      h += '<div class="box">Sem recomendação: não há fonte que sustente uma opção.' + (p.validar ? ' ' + esc(p.validar) : '') + '</div>';
+    }
+    h += '<div class="box"><b>Se ninguém decidir:</b> ' + esc(p.sem) + '</div>';
+    if (p.depende_de && p.depende_de.length) h += '<p class="meta">Depende de: ' + p.depende_de.map(esc).join(', ') + '</p>';
+    h += '<label for="txt">Outra resposta (opcional)<textarea id="txt" data-campo="textos">' + esc(est.textos[p.id] || '') + '</textarea></label>';
+    h += '<label for="nota">Observação (opcional)<textarea id="nota" data-campo="notas">' + esc(est.notas[p.id] || '') + '</textarea></label>';
+    h += '<div class="btns"><button class="btn pri" type="button" id="perguntar">Perguntar à sessão</button><button class="btn" type="button" id="prox">Próximo ponto</button></div><div class="aviso" id="aviso" role="status"></div>';
+    $('painel').innerHTML = h;
+  }
+
+  function linhasResumo() {
+    var t = 'RESUMO fechar-decisoes id=' + (D.meta && D.meta.id || '') + '\n';
+    pontos().forEach(function (p) {
+      var rel = relRec(p), n = (est.notas[p.id] || '').trim();
+      t += '- ' + p.id + ' · ' + p.titulo + ': ' + nomeEscolha(p) + (rel ? ' (' + rel + ')' : '') + (n ? ' | obs.: ' + n : '') + '\n';
+    });
+    return t;
+  }
+
+  function resumo() {
+    var feitos = pontos().filter(decidido).length, tot = pontos().length, nres = (D.resolvidos || []).length;
+    $('meta').textContent = feitos + ' de ' + tot + ' pontos com resposta' + (nres ? ' · ' + nres + ' resolvidos pelo código' : '') + (D.meta && D.meta.escopo ? ' · escopo: ' + D.meta.escopo : '') + (D.meta && D.meta.atualizado ? ' · atualizado em ' + D.meta.atualizado : '');
+    $('barra').style.width = (tot ? Math.round(feitos * 100 / tot) : 0) + '%';
+    $('tabres').innerHTML = pontos().map(function (p) {
+      return '<tr><td>' + esc(p.id) + '</td><td>' + esc(nomeEscolha(p)) + '</td><td>' + esc(relRec(p) || p.situacao) + '</td></tr>';
+    }).join('');
+  }
+
+  function tudo() { trilha(); painel(); resumo(); }
+
+  function copiar(texto, alvo) {
+    function falha() { alvo.textContent = 'Não foi possível copiar. O texto está abaixo para selecionar.'; $('txtres').hidden = false; $('txtres').textContent = texto; }
+    try { navigator.clipboard.writeText(texto).then(function () { alvo.textContent = 'Copiado. Cole na sessão.'; }, falha); } catch (e) { falha(); }
+  }
+
+  function ligar() {
+    $('trilha').addEventListener('click', function (e) { var b = e.target.closest('[data-id]'); if (!b) return; est.atual = b.getAttribute('data-id'); guardar(); tudo(); });
+    $('painel').addEventListener('click', function (e) {
+      var p = ponto(est.atual), o = e.target.closest('[data-op]');
+      if (o) { var k = +o.getAttribute('data-op'); est.escolhas[p.id] = est.escolhas[p.id] === k ? null : k; guardar(); tudo(); return; }
+      if (e.target.id === 'perguntar') {
+        copiar('Sobre o ponto ' + p.id + ' (' + p.titulo + ') do fechar-decisoes id=' + (D.meta && D.meta.id || '') + ': explique em palavras simples e compare as opções. Minha dúvida: ', $('aviso'));
+        return;
+      }
+      if (e.target.id === 'prox') { var i = pontos().indexOf(p); est.atual = pontos()[(i + 1) % pontos().length].id; guardar(); tudo(); }
+    });
+    $('painel').addEventListener('input', function (e) {
+      var c = e.target.getAttribute('data-campo'); if (!c) return;
+      est[c][ponto(est.atual).id] = e.target.value; guardar(); trilha(); resumo();
+    });
+    $('copiar').addEventListener('click', function () { copiar(linhasResumo(), $('aviso2')); });
+    $('limpar').addEventListener('click', function () {
+      if (!confirmarLimpar) { confirmarLimpar = true; $('limpar').textContent = 'Confirmar: apagar marcações'; return; }
+      confirmarLimpar = false; est = { atual: est.atual, escolhas: {}, textos: {}, notas: {} }; guardar(); $('limpar').textContent = 'Limpar marcações'; tudo();
+    });
+  }
+
+  try {
+    D = JSON.parse($('dados').textContent);
+    if (!D || !D.pontos || !D.pontos.length) throw new Error('nenhum ponto aberto');
+  } catch (e) {
+    $('meta').textContent = '';
+    $('erro').hidden = false;
+    $('erro').textContent = 'Painel sem dados (' + e.message + '). Gere-o com o auxiliar: fechar_decisoes.py painel <decisoes.json>.';
+    return;
+  }
+  chave = 'fechar-decisoes:' + (D.meta && D.meta.raiz || '') + ':' + (D.meta && D.meta.id || '');
+  carregar();
+  if (!est.atual || !D.pontos.some(function (p) { return p.id === est.atual; })) est.atual = D.pontos[0].id;
+  if (D.meta && D.meta.titulo) { $('titulo').textContent = D.meta.titulo; document.title = D.meta.titulo; }
+  $('grid').hidden = false; $('resumo').hidden = false;
+  ligar(); tudo();
+})();
+</script>
+</body>
+</html>

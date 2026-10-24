@@ -1,6 +1,2 @@
 __pycache__/
 *.pyc
-# estado local da skill nunca entra no repositório
-decisoes.json
-painel.html
-.fechar-decisoes/
