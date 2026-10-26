@@ -46,29 +46,31 @@ const PONTOS=[
 {id:'D-03',titulo:'Contato extra',opcoes:[{nome:'Informar agora',campos:[{id:'email',rotulo:'E-mail',padrao:'^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$',erro:'E-mail inválido: confira o endereço.'}]},{nome:'Fica de fora'}]}];
 function construir(estado,celular,destaque,animar,campos){
 const v=(id,d)=>estado[id]??d,H=id=>id===destaque?' sv-hl':'';
-const titulo=PONTOS[1].opcoes[v('D-02',0)].texto;
+const titulo=esc(PONTOS[1].opcoes[v('D-02',0)].texto);
 const duas=v('D-01',0)===1&&!celular;
-const extra=estado['D-03']===0?`<p class="s${H('D-03')}" style="margin:10px 0 0">${(campos.email||'(preencha o e-mail)').replace(/</g,'')}</p>`:'';
+const extra=estado['D-03']===0?`<p class="s${H('D-03')}" style="margin:10px 0 0">${esc(campos.email||'(preencha o e-mail)')}</p>`:'';
 return `<div class="${animar?'sv-an':''}" style="background:#f7f4ee;color:#292a27;font:13px/1.6 system-ui,sans-serif;padding:24px"><div class="${H('D-01')}" style="display:grid;gap:18px;grid-template-columns:${duas?'1fr 1fr':'1fr'}"><div><h3 class="s${H('D-02')}" style="font:500 22px Georgia,serif;margin:0 0 8px">${titulo}</h3><p class="s" style="margin:0">Texto de apoio.</p></div><div class="s" style="background:#ebe1d5;border-radius:12px;padding:16px">Cartão da ação${extra}</div></div></div>`;}
 const S={},F={};let C=0,W='100%',CMP=false,AN=false;
 const $=id=>document.getElementById(id);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function textoDa(o){return o.texto||''}
 function camposDe(p){const o=p.opcoes[S[p.id]];return o&&o.campos?o.campos:[]}
 function renderCur(){const p=PONTOS[C];
-$('sv-cur').innerHTML=`<p style="font-size:13px;color:var(--text-secondary,#4b5563);margin:0 0 6px"><b style="font-weight:500;color:var(--text-primary,#111827)">${p.id}</b> · ${p.titulo} <span style="color:var(--text-muted,#6b7280)">(${C+1} de ${PONTOS.length})</span></p>${p.nota?`<p style="font-size:12px;color:var(--text-muted,#6b7280);margin:0 0 8px">${p.nota}</p>`:''}<div class="sv-op">${p.opcoes.map((o,i)=>`<button data-i="${i}" aria-pressed="${S[p.id]===i}">${o.nome}${p.rec===i?'<span class="sv-rc">Recomendado</span>':''}${textoDa(o)&&!o.nome.includes(textoDa(o))?`<small>${textoDa(o)}</small>`:''}</button>`).join('')}</div>${camposDe(p).length?`<div class="sv-in">${camposDe(p).map(c=>`<label for="sv-c-${c.id}">${c.rotulo}</label><input id="sv-c-${c.id}" data-c="${c.id}" value="${(F[c.id]||'').replace(/"/g,'')}">`).join('')}</div>`:''}`;
-$('sv-chips').innerHTML=PONTOS.map((q,i)=>`<button data-c="${i}" class="${i===C?'cur':''} ${S[q.id]!==undefined?'ok':''}">${q.id}</button>`).join('');}
+$('sv-cur').innerHTML=`<p style="font-size:13px;color:var(--text-secondary,#4b5563);margin:0 0 6px"><b style="font-weight:500;color:var(--text-primary,#111827)">${esc(p.id)}</b> · ${esc(p.titulo)} <span style="color:var(--text-muted,#6b7280)">(${C+1} de ${PONTOS.length})</span></p>${p.nota?`<p style="font-size:12px;color:var(--text-muted,#6b7280);margin:0 0 8px">${esc(p.nota)}</p>`:''}<div class="sv-op">${p.opcoes.map((o,i)=>`<button data-i="${i}" aria-pressed="${S[p.id]===i}">${esc(o.nome)}${p.rec===i?'<span class="sv-rc">Recomendado</span>':''}${textoDa(o)&&!o.nome.includes(textoDa(o))?`<small>${esc(textoDa(o))}</small>`:''}</button>`).join('')}</div>${camposDe(p).length?`<div class="sv-in">${camposDe(p).map(c=>`<label for="sv-c-${esc(c.id)}">${esc(c.rotulo)}</label><input id="sv-c-${esc(c.id)}" data-c="${esc(c.id)}" value="${esc(F[c.id]||'')}">`).join('')}</div>`:''}`;
+$('sv-chips').innerHTML=PONTOS.map((q,i)=>`<button data-c="${i}" class="${i===C?'cur':''} ${S[q.id]!==undefined?'ok':''}">${esc(q.id)}</button>`).join('');}
 function prever(){const m=W!=='100%',p=PONTOS[C];$('sv-fr').style.maxWidth=W;
 const pv=$('sv-pv');pv.innerHTML=construir(S,m,p.id,AN,F);
 if(AN)pv.querySelectorAll('.s').forEach((e,i)=>e.style.animationDelay=(0.1+i*0.12)+'s');
 const cm=$('sv-cmp');cm.style.display=CMP?'grid':'none';$('sv-cmpb').setAttribute('aria-pressed',CMP);
 if(CMP){const n=p.opcoes.length,cols=n>2?2:n;cm.style.gridTemplateColumns=`repeat(${cols},minmax(0,1fr))`;cm.style.setProperty('--zs',m?0.6:0.45);cm.style.setProperty('--zh',m?'420px':'300px');
-cm.innerHTML=p.opcoes.map((o,i)=>`<div class="c" data-i="${i}" role="button" tabindex="0" aria-pressed="${S[p.id]===i}"><div class="t">${i+1}. ${o.nome}</div><div class="z"><div style="${m?'max-width:370px':''}">${construir({...S,[p.id]:i},m,p.id,false,F)}</div></div></div>`).join('')}
+cm.innerHTML=p.opcoes.map((o,i)=>`<div class="c" data-i="${i}" role="button" tabindex="0" aria-pressed="${S[p.id]===i}"><div class="t">${i+1}. ${esc(o.nome)}</div><div class="z"><div style="${m?'max-width:370px':''}">${construir({...S,[p.id]:i},m,p.id,false,F)}</div></div></div>`).join('')}
 const k=PONTOS.filter(q=>S[q.id]!==undefined).length;$('sv-st').textContent=`${k} de ${PONTOS.length} escolhidas`;}
 function r(){renderCur();prever()}
 function escolher(i){S[PONTOS[C].id]=i;$('sv-er').textContent='';r()}
 $('sv-cur').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b)escolher(+b.dataset.i)});
 $('sv-cur').addEventListener('input',e=>{const c=e.target.dataset.c;if(c){F[c]=e.target.value.trim();$('sv-er').textContent='';prever()}});
 $('sv-cmp').addEventListener('click',e=>{const c=e.target.closest('.c');if(c)escolher(+c.dataset.i)});
+$('sv-cmp').addEventListener('keydown',e=>{const c=e.target.closest('.c');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();escolher(+c.dataset.i)}});
 $('sv-chips').addEventListener('click',e=>{const b=e.target.closest('button');if(b){C=+b.dataset.c;r()}});
 $('sv-prev').onclick=()=>{C=(C+PONTOS.length-1)%PONTOS.length;r()};
 $('sv-next').onclick=()=>{C=(C+1)%PONTOS.length;r()};

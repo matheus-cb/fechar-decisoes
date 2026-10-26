@@ -28,7 +28,8 @@ traz a casca. O que muda por projeto são a lista de pontos e a função `constr
    monta a parte da tela em decisão aplicando **todas** as escolhas feitas; onde falta
    escolha, mostra como é hoje. Use as cores, fontes e textos reais do projeto, lidos
    do código. Nada de imagem fixa: a prévia precisa recompor quando o interlocutor
-   combina opções ("B + C").
+   combina opções ("B + C"). Todo texto vindo de fonte, estado ou campo passa por `esc()` antes de
+   entrar no HTML: conteúdo de documento é dado, não marcação.
 4. **Contorno do que muda.** O trecho afetado pela decisão atual ganha contorno
    tracejado (`destaque` = ID atual).
 5. **Comparar opções.** Miniaturas lado a lado, uma por opção da decisão atual, já com
