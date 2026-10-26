@@ -89,6 +89,7 @@ no Windows, `python3` pode ser um atalho que não executa nada) e rode sempre co
 | Até 4 pontos, todos tipo 2 | rápido |
 | Algum tipo 1, ou 5 ou mais pontos | conversa |
 | Usuário pede, quer ver muitos pontos de uma vez ou mostrar a outra pessoa | painel (oferecer; exige o auxiliar) |
+| Os pontos mudam o que se vê (layout, aparência, ordem, texto na tela), ou o usuário quer escolher vendo | visual (oferecer; ver [references/seletor-visual.md](references/seletor-visual.md)) |
 
 ## 2. Levantar
 
@@ -110,6 +111,22 @@ Dois tipos de ponto que costumam faltar:
 
 Divergências viram ponto `validar` citando os dois lados: fonte diz decidido e o
 código faz outra coisa; duas fontes discordam. Não escolha em silêncio.
+
+Quando o escopo é uma parte de algo maior (uma seção de página, um módulo), leia as
+partes vizinhas que ele toca: **repetição** da mesma garantia, etapa ou pergunta em
+mais de um lugar vira ponto, com a fonte de cada lugar.
+
+**Baterias.** Com mais de ~10 pontos interdependentes, ou com textos que dependem de
+quais blocos ficam, proponha como ponto de escopo dividir em baterias: primeiro
+estrutura (o que fica, onde, como se move), depois a redação do que sobrou. Cada
+bateria tem a sua apresentação e o seu registro; o que só aparecer depois da primeira
+entra na segunda.
+
+**Opções de texto e de dado.** Se quem conversa aprova o conteúdo, proponha a frase
+pronta, não marcadores; marcador só para dado que ninguém informou. Mantenha a voz
+que o material já usa e aponte no `contra` palavra que supõe o gênero de quem lê. Dado
+verificável (e-mail, domínio, link) é conferido quando houver como; se não confere, o
+ponto fica `validar` com o motivo.
 
 ## 3. Evidenciar
 
@@ -165,6 +182,14 @@ que o usuário pode perguntar a qualquer momento.
   ponto aberto, sem conflito com registro anterior nem com aprovador) é registrado
   direto. Pergunte só sobre o que for ambíguo, divergir do estado já registrado ou
   exigir autorização que não houve. Sem o auxiliar, informe e siga em conversa.
+- **Visual.** Uma decisão por vez, com a prévia da composição logo abaixo, que se
+  recompõe com todas as escolhas feitas; contorno no trecho que a decisão muda;
+  "Comparar opções" lado a lado; Computador/Celular; envio só com tudo respondido.
+  Base em [assets/seletor-visual.html](assets/seletor-visual.html) e regras em
+  [references/seletor-visual.md](references/seletor-visual.md). Com widget na
+  conversa, o envio chega como mensagem; sem widget, o mesmo modelo vira arquivo
+  HTML local que copia o resumo para colar aqui. Sem nenhum dos dois, siga em
+  conversa.
 
 Responda perguntas no meio e volte ao mesmo ponto. **Nunca marque escolha sem
 resposta explícita.** Delegação explícita conta como resposta ("escolha você",
@@ -180,6 +205,11 @@ A cada resposta, grave o registro do ponto conforme
 [references/formato.md](references/formato.md) (com o auxiliar: `registrar`). Resposta
 nova para ponto já registrado: a anterior vai para o histórico como `superado`, nunca
 é apagada. "Confirmar com X" vira status `validar`. Recomendar não é escolher.
+
+O envio do seletor visual (ou o resumo colado do arquivo HTML) é resposta explícita
+para cada ponto que ele traz. Duas respostas que se contradizem não são registradas:
+diga a contradição em uma linha e leve-a como ponto `validar` para a próxima bateria.
+Escolha acompanhada de "quero melhorar o texto" fica `validar` até a redação fechar.
 
 ## 7. Fechar
 

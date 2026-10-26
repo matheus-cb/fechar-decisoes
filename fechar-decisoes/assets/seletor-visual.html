@@ -1,0 +1,88 @@
+<style>
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sv-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.sv-chips button{font-size:12px;padding:4px 9px}
+.sv-chips button.cur{border:2px solid var(--border-accent,#2563eb);color:var(--text-accent,#2563eb)}
+.sv-chips button.ok::after{content:" ✓";color:var(--text-success,#15803d)}
+.sv-op{display:flex;flex-direction:column;gap:6px}
+.sv-op button{font-size:12.5px;padding:7px 10px;text-align:left}
+.sv-op button[aria-pressed=true]{border:2px solid var(--border-accent,#2563eb);color:var(--text-accent,#2563eb);background:var(--bg-accent-muted,#eff6ff)}
+.sv-op small{display:block;color:var(--text-muted,#6b7280);font-size:11.5px;margin-top:2px}
+.sv-rc{font-size:11px;color:var(--text-success,#15803d);margin-left:6px}
+.sv-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0 10px}
+.sv-bar>div{display:flex;gap:6px;flex-wrap:wrap}
+.sv-fr{border-radius:12px;overflow:hidden;border:0.5px solid var(--border,#d1d5db);margin:0 auto;transition:max-width .2s}
+.sv-hl{outline:2px dashed #c58b74;outline-offset:5px;border-radius:6px}
+.sv-an .s{opacity:0;animation:sv-up .5s cubic-bezier(.2,0,0,1) forwards}
+@keyframes sv-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sv-cmp{display:grid;gap:10px}
+.sv-cmp .c{border:0.5px solid var(--border,#d1d5db);border-radius:10px;overflow:hidden;cursor:pointer}
+.sv-cmp .c[aria-pressed=true]{outline:2px solid var(--border-accent,#2563eb)}
+.sv-cmp .c .t{font-size:12px;padding:6px 10px;color:var(--text-primary,#111827);background:var(--surface-1,#f9fafb)}
+.sv-cmp .c .z{height:var(--zh);overflow:hidden}
+.sv-cmp .c .z>div{transform:scale(var(--zs));transform-origin:0 0;width:calc(100%/var(--zs));pointer-events:none}
+.sv-in{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin:10px 0 0;font-size:13px;color:var(--text-secondary,#4b5563)}
+.sv-out{width:100%;min-height:90px;margin-top:8px;font-size:12px}
+</style>
+<h2 class="sr-only" id="sv-resumo">Seletor de decisões: uma por vez, com prévia ao vivo, destaque do trecho afetado e comparação das opções.</h2>
+<div class="sv-chips" id="sv-chips"></div>
+<div id="sv-cur"></div>
+<div class="sv-bar">
+<div><button id="sv-prev">← Anterior</button><button id="sv-next">Próxima →</button><button id="sv-cmpb" aria-pressed="false">Comparar opções</button></div>
+<div><button id="sv-play">Reproduzir animação</button><button data-w="100%" aria-pressed="true" class="sv-w">Computador</button><button data-w="370px" aria-pressed="false" class="sv-w">Celular</button></div>
+</div>
+<div id="sv-cmp" class="sv-cmp" style="display:none"></div>
+<div class="sv-fr" id="sv-fr"><div id="sv-pv"></div></div>
+<p style="font-size:12px;color:var(--text-muted,#6b7280);margin:8px 0 0" id="sv-legenda">O contorno tracejado mostra o que a decisão atual muda.</p>
+<div style="margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<button id="sv-go">Enviar escolhas ↗</button><span id="sv-st" style="font-size:13px;color:var(--text-secondary,#4b5563)"></span><span id="sv-er" style="font-size:13px;color:var(--text-danger,#b91c1c)"></span>
+</div>
+<textarea id="sv-out" class="sv-out" readonly style="display:none" aria-label="Resumo das escolhas para colar na conversa"></textarea>
+<script>
+const TITULO='Escolhas do exemplo no seletor';
+const PONTOS=[
+{id:'D-01',titulo:'Composição',nota:'Exemplo: troque PONTOS e construir() pelos do projeto.',opcoes:[{nome:'Uma coluna'},{nome:'Duas colunas'}]},
+{id:'D-02',titulo:'Título',rec:1,nota:'Recomendado quando o estado tem rec, com o porquê aqui.',opcoes:[{nome:'Manter',texto:'Vamos conversar?'},{nome:'Mais curto',texto:'Fale comigo'}]},
+{id:'D-03',titulo:'Contato extra',opcoes:[{nome:'Informar agora',campos:[{id:'email',rotulo:'E-mail',padrao:'^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$',erro:'E-mail inválido: confira o endereço.'}]},{nome:'Fica de fora'}]}];
+function construir(estado,celular,destaque,animar,campos){
+const v=(id,d)=>estado[id]??d,H=id=>id===destaque?' sv-hl':'';
+const titulo=esc(PONTOS[1].opcoes[v('D-02',0)].texto);
+const duas=v('D-01',0)===1&&!celular;
+const extra=estado['D-03']===0?`<p class="s${H('D-03')}" style="margin:10px 0 0">${esc(campos.email||'(preencha o e-mail)')}</p>`:'';
+return `<div class="${animar?'sv-an':''}" style="background:#f7f4ee;color:#292a27;font:13px/1.6 system-ui,sans-serif;padding:24px"><div class="${H('D-01')}" style="display:grid;gap:18px;grid-template-columns:${duas?'1fr 1fr':'1fr'}"><div><h3 class="s${H('D-02')}" style="font:500 22px Georgia,serif;margin:0 0 8px">${titulo}</h3><p class="s" style="margin:0">Texto de apoio.</p></div><div class="s" style="background:#ebe1d5;border-radius:12px;padding:16px">Cartão da ação${extra}</div></div></div>`;}
+const S={},F={};let C=0,W='100%',CMP=false,AN=false;
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function textoDa(o){return o.texto||''}
+function camposDe(p){const o=p.opcoes[S[p.id]];return o&&o.campos?o.campos:[]}
+function renderCur(){const p=PONTOS[C];
+$('sv-cur').innerHTML=`<p style="font-size:13px;color:var(--text-secondary,#4b5563);margin:0 0 6px"><b style="font-weight:500;color:var(--text-primary,#111827)">${esc(p.id)}</b> · ${esc(p.titulo)} <span style="color:var(--text-muted,#6b7280)">(${C+1} de ${PONTOS.length})</span></p>${p.nota?`<p style="font-size:12px;color:var(--text-muted,#6b7280);margin:0 0 8px">${esc(p.nota)}</p>`:''}<div class="sv-op">${p.opcoes.map((o,i)=>`<button data-i="${i}" aria-pressed="${S[p.id]===i}">${esc(o.nome)}${p.rec===i?'<span class="sv-rc">Recomendado</span>':''}${textoDa(o)&&!o.nome.includes(textoDa(o))?`<small>${esc(textoDa(o))}</small>`:''}</button>`).join('')}</div>${camposDe(p).length?`<div class="sv-in">${camposDe(p).map(c=>`<label for="sv-c-${esc(c.id)}">${esc(c.rotulo)}</label><input id="sv-c-${esc(c.id)}" data-c="${esc(c.id)}" value="${esc(F[c.id]||'')}">`).join('')}</div>`:''}`;
+$('sv-chips').innerHTML=PONTOS.map((q,i)=>`<button data-c="${i}" class="${i===C?'cur':''} ${S[q.id]!==undefined?'ok':''}">${esc(q.id)}</button>`).join('');}
+function prever(){const m=W!=='100%',p=PONTOS[C];$('sv-fr').style.maxWidth=W;
+const pv=$('sv-pv');pv.innerHTML=construir(S,m,p.id,AN,F);
+if(AN)pv.querySelectorAll('.s').forEach((e,i)=>e.style.animationDelay=(0.1+i*0.12)+'s');
+const cm=$('sv-cmp');cm.style.display=CMP?'grid':'none';$('sv-cmpb').setAttribute('aria-pressed',CMP);
+if(CMP){const n=p.opcoes.length,cols=n>2?2:n;cm.style.gridTemplateColumns=`repeat(${cols},minmax(0,1fr))`;cm.style.setProperty('--zs',m?0.6:0.45);cm.style.setProperty('--zh',m?'420px':'300px');
+cm.innerHTML=p.opcoes.map((o,i)=>`<div class="c" data-i="${i}" role="button" tabindex="0" aria-pressed="${S[p.id]===i}"><div class="t">${i+1}. ${esc(o.nome)}</div><div class="z"><div style="${m?'max-width:370px':''}">${construir({...S,[p.id]:i},m,p.id,false,F)}</div></div></div>`).join('')}
+const k=PONTOS.filter(q=>S[q.id]!==undefined).length;$('sv-st').textContent=`${k} de ${PONTOS.length} escolhidas`;}
+function r(){renderCur();prever()}
+function escolher(i){S[PONTOS[C].id]=i;$('sv-er').textContent='';r()}
+$('sv-cur').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b)escolher(+b.dataset.i)});
+$('sv-cur').addEventListener('input',e=>{const c=e.target.dataset.c;if(c){F[c]=e.target.value.trim();$('sv-er').textContent='';prever()}});
+$('sv-cmp').addEventListener('click',e=>{const c=e.target.closest('.c');if(c)escolher(+c.dataset.i)});
+$('sv-cmp').addEventListener('keydown',e=>{const c=e.target.closest('.c');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();escolher(+c.dataset.i)}});
+$('sv-chips').addEventListener('click',e=>{const b=e.target.closest('button');if(b){C=+b.dataset.c;r()}});
+$('sv-prev').onclick=()=>{C=(C+PONTOS.length-1)%PONTOS.length;r()};
+$('sv-next').onclick=()=>{C=(C+1)%PONTOS.length;r()};
+$('sv-cmpb').onclick=()=>{CMP=!CMP;r()};
+$('sv-play').onclick=()=>{AN=true;prever();AN=false};
+document.querySelectorAll('.sv-w').forEach(b=>b.onclick=()=>{W=b.dataset.w;document.querySelectorAll('.sv-w').forEach(x=>x.setAttribute('aria-pressed',x===b));prever()});
+$('sv-go').onclick=()=>{const er=$('sv-er'),f=PONTOS.filter(q=>S[q.id]===undefined);
+if(f.length){C=PONTOS.indexOf(f[0]);r();er.textContent=' Falta escolher: '+f.map(q=>q.id).join(', ');return}
+for(const p of PONTOS){for(const c of camposDe(p)){if(!new RegExp(c.padrao).test(F[c.id]||'')){C=PONTOS.indexOf(p);r();er.textContent=' '+c.erro;return}}}
+const resumo=TITULO+': '+PONTOS.map(q=>{const cs=camposDe(q).map(c=>`${c.rotulo}: ${F[c.id]}`).join('; ');return `${q.id} ${q.titulo}: ${q.opcoes[S[q.id]].nome}${cs?` (${cs})`:''}`}).join('; ')+'.';
+if(typeof sendPrompt==='function'){sendPrompt(resumo);return}
+const out=$('sv-out'),st=$('sv-st');out.style.display='block';out.value=resumo;out.select();
+if(navigator.clipboard)navigator.clipboard.writeText(resumo).then(()=>{st.textContent='Resumo copiado: cole na conversa.'},()=>{st.textContent='Copie o resumo abaixo e cole na conversa.'});else st.textContent='Copie o resumo abaixo e cole na conversa.'};
+r();
+</script>

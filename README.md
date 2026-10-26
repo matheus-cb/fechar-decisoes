@@ -13,6 +13,12 @@ ponto, grava as escolhas num estado local por projeto e propõe o diff para o pl
   Python 3.8 ou mais novo. Sem Python, o fluxo em texto funciona, mas o painel HTML não.
 - O estado fica em `~/.fechar-decisoes/` (ou em `FECHAR_DECISOES_HOME`), fora do repositório
   do projeto.
+- Para decisões visuais há o **modo visual**: um seletor passo a passo com prévia ao vivo
+  da composição, contorno no que cada decisão muda, "Comparar opções" e
+  Computador/Celular ([`references/seletor-visual.md`](fechar-decisoes/references/seletor-visual.md),
+  modelo em [`assets/seletor-visual.html`](fechar-decisoes/assets/seletor-visual.html)). No
+  Claude Code ele é desenhado como widget na conversa; em hosts sem widget, o mesmo modelo
+  vira um HTML local que copia o resumo para colar na conversa.
 
 Licença: **nenhuma licença pública foi escolhida.** O repositório é privado, para uso do dono.
 
@@ -61,6 +67,11 @@ if [ -e "$dest" ]; then echo "Já existe: $dest. Renomeie ou remova antes de ins
 else mkdir -p "$(dirname "$dest")" && cp -R "$tmp/fechar-decisoes" "$dest" && echo "Instalada em $dest"; fi
 ```
 
+**Versão:** a release `v0.1.0` é anterior ao acionamento automático no Claude Code e ao modo
+visual (nela a skill é só manual). Até sair uma release nova, para a versão de `main` clone o
+repositório (`gh repo clone matheus-cb/fechar-decisoes`) e copie a pasta `fechar-decisoes/` para o
+mesmo destino, com a mesma checagem de "já existe".
+
 Para atualizar: renomeie ou remova a pasta instalada e repita com a nova tag. O estado em
 `~/.fechar-decisoes/` não é tocado.
 
@@ -84,3 +95,6 @@ Para atualizar: renomeie ou remova a pasta instalada e repita com a nova tag. O 
   bloqueio de invocação automática não foi testado. Faça o teste rápido acima na primeira
   instalação.
 - Ainda não há plugin nem marketplace: a instalação é por cópia da pasta da skill.
+- O modo visual depende de o host desenhar interface na conversa (no Claude Code, a ferramenta
+  de widget). Foi usado de ponta a ponta no Claude Code (macOS); o modelo como arquivo HTML
+  local foi conferido no navegador, mas não dentro do Codex.
