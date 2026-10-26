@@ -1,6 +1,6 @@
 ---
 name: fechar-decisoes
-description: Fecha as decisoes em aberto de um plano, especificacao, lista de tarefas, issue ou trecho da conversa do projeto atual antes de implementar. Levanta cada ponto com fonte, opcoes e consequencia de nao decidir, recomenda so com evidencia conferida, conversa ponto a ponto, grava escolhas e historico num estado local por projeto e propoe o diff para o plano. Use quando o usuario invocar e tambem por conta propria sempre que, antes de implementar, houver decisoes em aberto que mudam o que sera construido: plano, spec ou lista de tarefas com perguntas, "pendente", "a definir", TBD ou opcoes nao escolhidas; issue com requisitos ambiguos; conversa que acumulou varias escolhas sem resposta; ou pedido como "vamos fechar as pendencias", "o que falta decidir?", "decide comigo antes de codar". Nao use para uma unica pergunta simples que se resolve numa linha, nem quando o usuario ja decidiu tudo e so pediu para implementar.
+description: 'Fecha as decisoes em aberto de um plano, especificacao, lista de tarefas, issue ou trecho da conversa do projeto atual antes de implementar. Levanta cada ponto com fonte, opcoes e consequencia de nao decidir, recomenda so com evidencia conferida, conversa ponto a ponto, grava escolhas e historico num estado local por projeto e propoe o diff para o plano. Use quando o usuario invocar e tambem por conta propria sempre que, antes de implementar, houver decisoes em aberto que mudam o que sera construido: plano, spec ou lista de tarefas com perguntas, "pendente", "a definir", TBD ou opcoes nao escolhidas; issue com requisitos ambiguos; conversa que acumulou varias escolhas sem resposta; ou pedido como "vamos fechar as pendencias", "o que falta decidir?", "decide comigo antes de codar". Nao use para uma unica pergunta simples que se resolve numa linha, nem quando o usuario ja decidiu tudo e so pediu para implementar.'
 argument-hint: "[fonte: caminho, issue ou 'conversa'] [id=slug] [modo=rapido|conversa|painel] [aplicar] [escopo]"
 ---
 
@@ -70,6 +70,9 @@ no Windows, `python3` pode ser um atalho que não executa nada) e rode sempre co
 
 ## 1. Triagem
 
+0. Se a skill foi acionada pelo modelo, sem o usuário pedir, diga em uma linha
+   que vai fechar as decisões em aberto e só grave estado depois que o usuário
+   responder ou pedir para seguir; se ele recusar, pare.
 1. Resolva fonte, escopo e `id` (slug curto: minúsculas, dígitos e hífen).
 2. Localize o estado conforme [references/estado.md](references/estado.md). Se já
    existe, **retome**: mostre a cobertura, revalide as fontes citadas e siga do
