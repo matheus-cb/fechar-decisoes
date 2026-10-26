@@ -11,6 +11,12 @@ ponto, grava as escolhas num estado local por projeto e propõe o diff para o pl
   Python 3.8 ou mais novo. Sem Python, o fluxo em texto funciona, mas o painel HTML não.
 - O estado fica em `~/.fechar-decisoes/` (ou em `FECHAR_DECISOES_HOME`), fora do repositório
   do projeto.
+- Para decisões visuais há o **modo visual**: um seletor passo a passo com prévia ao vivo
+  da composição, contorno no que cada decisão muda, "Comparar opções" e
+  Computador/Celular ([`references/seletor-visual.md`](fechar-decisoes/references/seletor-visual.md),
+  modelo em [`assets/seletor-visual.html`](fechar-decisoes/assets/seletor-visual.html)). No
+  Claude Code ele é desenhado como widget na conversa; em hosts sem widget, o mesmo modelo
+  vira um HTML local que copia o resumo para colar na conversa.
 
 Licença: **nenhuma licença pública foi escolhida.** O repositório é privado, para uso do dono.
 
@@ -77,3 +83,6 @@ Para atualizar: renomeie ou remova a pasta instalada e repita com a nova tag. O 
 - A invocação real dentro do Claude Code e do Codex ainda não foi testada de ponta a ponta,
   nem o bloqueio de invocação automática. Faça o teste rápido acima na primeira instalação.
 - Ainda não há plugin nem marketplace: a instalação é por cópia da pasta da skill.
+- O modo visual depende de o host desenhar interface na conversa (no Claude Code, a ferramenta
+  de widget). Foi usado de ponta a ponta no Claude Code (macOS); o modelo como arquivo HTML
+  local foi conferido no navegador, mas não dentro do Codex.
