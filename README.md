@@ -5,8 +5,10 @@ da conversa antes de implementar. Ela levanta cada ponto com fonte e opções, c
 ponto, grava as escolhas num estado local por projeto e propõe o diff para o plano.
 
 - A skill fica em [`fechar-decisoes/`](fechar-decisoes/). Comece por [`SKILL.md`](fechar-decisoes/SKILL.md).
-- A invocação é **só manual**: `disable-model-invocation: true` no Claude Code e
-  `allow_implicit_invocation: false` em `agents/openai.yaml` no Codex.
+- No Claude Code, a skill pode ser invocada à mão ou **pelo próprio modelo**, quando a
+  conversa tem decisões em aberto antes de implementar; a `description` do `SKILL.md` diz
+  quando usar e quando não usar. No Codex a invocação continua **só manual**
+  (`allow_implicit_invocation: false` em `agents/openai.yaml`).
 - O auxiliar `scripts/fechar_decisoes.py` é opcional, usa só a biblioteca padrão e roda em
   Python 3.8 ou mais novo. Sem Python, o fluxo em texto funciona, mas o painel HTML não.
 - O estado fica em `~/.fechar-decisoes/` (ou em `FECHAR_DECISOES_HOME`), fora do repositório
@@ -65,6 +67,11 @@ if [ -e "$dest" ]; then echo "Já existe: $dest. Renomeie ou remova antes de ins
 else mkdir -p "$(dirname "$dest")" && cp -R "$tmp/fechar-decisoes" "$dest" && echo "Instalada em $dest"; fi
 ```
 
+**Versão:** a release `v0.1.0` é anterior ao acionamento automático no Claude Code e ao modo
+visual (nela a skill é só manual). Até sair uma release nova, para a versão de `main` clone o
+repositório (`gh repo clone matheus-cb/fechar-decisoes`) e copie a pasta `fechar-decisoes/` para o
+mesmo destino, com a mesma checagem de "já existe".
+
 Para atualizar: renomeie ou remova a pasta instalada e repita com a nova tag. O estado em
 `~/.fechar-decisoes/` não é tocado.
 
@@ -74,14 +81,19 @@ Para atualizar: renomeie ou remova a pasta instalada e repita com a nova tag. O 
    No Windows use `py -3 -I` ou `python -I` com `$HOME\.claude\skills\...`.
 2. Abra uma sessão nova do host, num projeto de teste, e invoque `/fechar-decisoes conversa`
    (Claude Code) ou `$fechar-decisoes conversa` (Codex).
-3. Confira que a skill **não** é carregada sozinha quando você só conversa sobre decisões.
+3. No Claude Code, confira que a skill é carregada sozinha quando um plano tem pendências antes
+   de implementar, e que **não** é carregada para uma pergunta simples. No Codex, confira que
+   ela **não** é carregada sem `$fechar-decisoes`.
 
 ## Limites conhecidos
 
 - O auxiliar e o painel foram testados no Windows com Python 3.13. Em Python 3.8, só a
   sintaxe foi conferida.
-- A invocação real dentro do Claude Code e do Codex ainda não foi testada de ponta a ponta,
-  nem o bloqueio de invocação automática. Faça o teste rápido acima na primeira instalação.
+- A invocação real dentro do Claude Code e do Codex ainda não foi testada de ponta a ponta.
+  No Claude Code (macOS), sem `disable-model-invocation`, a skill passou a aparecer na lista
+  que o modelo pode invocar; o disparo automático em si ainda não foi observado. No Codex, o
+  bloqueio de invocação automática não foi testado. Faça o teste rápido acima na primeira
+  instalação.
 - Ainda não há plugin nem marketplace: a instalação é por cópia da pasta da skill.
 - O modo visual depende de o host desenhar interface na conversa (no Claude Code, a ferramenta
   de widget). Foi usado de ponta a ponta no Claude Code (macOS); o modelo como arquivo HTML
