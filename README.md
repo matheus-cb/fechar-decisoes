@@ -20,11 +20,16 @@ ponto, grava as escolhas num estado local por projeto e propõe o diff para o pl
   Claude Code ele é desenhado como widget na conversa; em hosts sem widget, o mesmo modelo
   vira um HTML local que copia o resumo para colar na conversa.
 
-Licença: **nenhuma licença pública foi escolhida.** O repositório é privado, para uso do dono.
+Licença: **nenhuma licença foi escolhida ainda.** O repositório é público para leitura, mas sem
+licença não há concessão de direitos de reutilização ou redistribuição além do que os termos do GitHub permitem.
 
 ## Instalação em outra máquina
 
-Pré-requisito: `gh` autenticado numa conta com acesso a este repositório privado (`gh auth status`).
+Pré-requisito: `gh` autenticado em qualquer conta (`gh auth status`); o repositório é público. Sem `gh`,
+baixe os mesmos arquivos pelo navegador ou `curl`: a release em
+`https://github.com/matheus-cb/fechar-decisoes/releases/download/v0.1.0/fechar-decisoes-portatil.zip`
+(e `SHA256SUMS.txt` no mesmo caminho) ou o `main` em
+`https://github.com/matheus-cb/fechar-decisoes/archive/refs/heads/main.zip`.
 
 Destino, conforme a documentação oficial de cada host:
 
@@ -69,7 +74,7 @@ else mkdir -p "$(dirname "$dest")" && cp -R "$tmp/fechar-decisoes" "$dest" && ec
 
 **Versão:** a release `v0.1.0` é anterior ao acionamento automático no Claude Code e ao modo
 visual (nela a skill é só manual). Até sair uma release nova, para a versão de `main` clone o
-repositório (`gh repo clone matheus-cb/fechar-decisoes`) e copie a pasta `fechar-decisoes/` para o
+repositório (`gh repo clone matheus-cb/fechar-decisoes` ou `git clone https://github.com/matheus-cb/fechar-decisoes.git`) e copie a pasta `fechar-decisoes/` para o
 mesmo destino, com a mesma checagem de "já existe".
 
 Para atualizar: renomeie ou remova a pasta instalada e repita com a nova tag. O estado em
